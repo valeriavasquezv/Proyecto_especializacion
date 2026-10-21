@@ -23,14 +23,25 @@ def armar_peticion(pregunta):
 
     return url, body
 
-
 def enviar_peticion(url, body):
     try:
         respuesta = requests.post(url, json=body)
+        respuesta.raise_for_status()
+
     except requests.exceptions.ConnectionError:
         raise RuntimeError(
             "No se pudo conectar con el servicio. "
             "Intenta de nuevo en unos segundos."
+        )
+
+    except requests.exceptions.HTTPError as error:
+        if respuesta.status_code == 503:
+            raise RuntimeError(
+                "El servicio Gemini no está disponible temporalmente. "
+                "Intenta de nuevo más tarde."
+            )
+        raise RuntimeError(
+            f"El servicio respondió con un error HTTP: {error}"
         )
 
     try:
@@ -53,7 +64,6 @@ def obtener_dato_de_prueba(pregunta):
         url, body = armar_peticion(pregunta)
         datos = enviar_peticion(url, body)
         
-
         texto = extraer_texto(datos)
         return texto
     
