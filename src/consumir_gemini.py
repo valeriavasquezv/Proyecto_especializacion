@@ -5,13 +5,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
-def armar_peticion(pregunta):
+def armar_peticion(
+    pregunta,
+    modelo="gemini-3.1-flash-lite"
+):
     if not pregunta:
-        raise ValueError("La pregunta no puede estar vacía") 
+        raise ValueError("La pregunta no puede estar vacía")
 
     api_key = os.getenv("GEMINI_API_KEY")
-    modelo = "gemini-3.1-flash-lite"
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent?key={api_key}"
 
@@ -37,11 +38,12 @@ def enviar_peticion(url, body):
     except requests.exceptions.HTTPError as error:
         if respuesta.status_code == 503:
             raise RuntimeError(
-                "El servicio Gemini no está disponible temporalmente. "
-                "Intenta de nuevo más tarde."
+                f"Gemini respondió con HTTP 503. "
+                f"Detalle: {respuesta.text}"
             )
         raise RuntimeError(
-            f"El servicio respondió con un error HTTP: {error}"
+            f"El servicio respondió con un error HTTP: {error}. "
+            f"Detalle: {respuesta.text}"
         )
 
     try:
@@ -81,5 +83,7 @@ def calcular_costo(datos, precio_entrada, precio_salida):
         + tokens_salida * precio_salida
     )
 
-print(obtener_dato_de_prueba(
-    "Confirma en una frase corta que esta conexión funciona"))                        
+if __name__ == "__main__":
+    print(obtener_dato_de_prueba(
+        "Confirma en una frase corta que esta conexión funciona"
+    ))                      
