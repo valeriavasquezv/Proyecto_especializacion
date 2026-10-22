@@ -70,5 +70,16 @@ def obtener_dato_de_prueba(pregunta):
     except (ValueError, RuntimeError) as error:
         print("No se pudo completar la operación:", error)
 
+def calcular_costo(datos, precio_entrada, precio_salida):
+    uso = datos["usageMetadata"]
+
+    tokens_entrada = uso["promptTokenCount"]
+    tokens_salida = uso["candidatesTokenCount"]
+
+    return (
+        tokens_entrada * precio_entrada
+        + tokens_salida * precio_salida
+    )
+
 print(obtener_dato_de_prueba(
     "Confirma en una frase corta que esta conexión funciona"))                        
