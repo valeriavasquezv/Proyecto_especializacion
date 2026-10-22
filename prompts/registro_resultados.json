@@ -1,0 +1,35 @@
+{
+    "extraer_ingredientes": {
+        "exitos": 2,
+        "fallos": 1,
+        "total_intentos": 3,
+        "detalle_fallos": [
+            {
+                "intento": 3,
+                "error": "Gemini respondió con HTTP 503. Detalle: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n"
+            }
+        ]
+    },
+    "detectar_datos_faltantes": {
+        "exitos": 2,
+        "fallos": 1,
+        "total_intentos": 3,
+        "detalle_fallos": [
+            {
+                "intento": 1,
+                "error": "Gemini respondió con HTTP 503. Detalle: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n"
+            }
+        ]
+    },
+    "estructurar_receta": {
+        "exitos": 2,
+        "fallos": 1,
+        "total_intentos": 3,
+        "detalle_fallos": [
+            {
+                "intento": 2,
+                "error": "Gemini respondió con HTTP 503. Detalle: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n"
+            }
+        ]
+    }
+}
