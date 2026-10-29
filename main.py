@@ -1,12 +1,8 @@
 
 import json
 
-from src.consumir_gemini import (
-    armar_peticion,
-    enviar_peticion,
-    extraer_texto,
-    parsear_respuesta_json,
-)
+from src.cliente import consultar_modelo
+from src.consumir_gemini import parsear_respuesta_json
 from prompts.banco import BANCO_DE_PROMPTS
 
 
@@ -26,15 +22,13 @@ def main():
     system_instruction = prompt["system_instruction"]
     response_schema = prompt["response_schema"]
 
-    try:
-        url, body = armar_peticion(
+    try: 
+        texto = consultar_modelo(
             pregunta_usuario,
             system_instruction,
             response_schema,
         )
 
-        respuesta = enviar_peticion(url, body)
-        texto = extraer_texto(respuesta)
         datos = parsear_respuesta_json(texto)
 
         print("\nResultado de la miniaplicación:")
@@ -42,7 +36,6 @@ def main():
 
     except (RuntimeError, ValueError, KeyError) as error:
         print(f"\nNo se pudo completar la operación: {error}")
-
 
 if __name__ == "__main__":
     main()

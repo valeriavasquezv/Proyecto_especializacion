@@ -40,23 +40,39 @@ def armar_peticion(
 
     return url, body
 
+
 def enviar_peticion(url, body):
     try:
-        respuesta = requests.post(url, json=body)
-        respuesta.raise_for_status()
-
-    except requests.exceptions.ConnectionError:
-        raise RuntimeError(
-            "No se pudo conectar con el servicio. "
-            "Intenta de nuevo en unos segundos."
+        respuesta = requests.post(
+            url,
+            json=body,
+            timeout=10
         )
 
+    except (
+        requests.exceptions.Timeout,
+        requests.exceptions.ConnectionError
+    ):
+        raise TimeoutError(
+            "No se pudo contactar al proveedor. "
+            "Puede ser momentáneo."
+        )
+
+    if respuesta.status_code in (401, 403):
+        raise ValueError(
+            "Credencial inválida o sin permiso. "
+            "Revisa tu GEMINI_API_KEY."
+        )
+
+    if respuesta.status_code == 429 or respuesta.status_code >= 500:
+        raise TimeoutError(
+            "El proveedor no pudo procesar la petición. "
+            "Hay que esperar y reintentar."
+        )
+
+    try:
+        respuesta.raise_for_status()
     except requests.exceptions.HTTPError as error:
-        if respuesta.status_code == 503:
-            raise RuntimeError(
-                f"Gemini respondió con HTTP 503. "
-                f"Detalle: {respuesta.text}"
-            )
         raise RuntimeError(
             f"El servicio respondió con un error HTTP: {error}. "
             f"Detalle: {respuesta.text}"
@@ -66,8 +82,10 @@ def enviar_peticion(url, body):
         return respuesta.json()
     except requests.exceptions.JSONDecodeError:
         raise RuntimeError(
-            "La respuesta del servicio no llegó en el formato esperado."
+            "La respuesta del servicio no llegó "
+            "en el formato esperado."
         )
+
 
 def extraer_texto(datos):
     try:
