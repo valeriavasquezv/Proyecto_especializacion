@@ -26,9 +26,12 @@ class TestCliente(unittest.TestCase):
         )
 
         mock_reintento.return_value = {
-            "respuesta": "simulada"
+        "respuesta": "simulada",
+        "usageMetadata": {
+        "promptTokenCount": 100,
+        "candidatesTokenCount": 50,
         }
-
+    }
         mock_extraer.return_value = "Hola, esta es una respuesta."
 
         resultado = consultar_modelo(
@@ -82,7 +85,7 @@ class TestCliente(unittest.TestCase):
         resultado = con_reintento(
             operacion,
             intentos=3,
-            espera_segundos=2,
+            espera_base=2,
         )
 
         self.assertEqual(resultado, "Respuesta exitosa")
