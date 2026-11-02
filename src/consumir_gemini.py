@@ -66,9 +66,9 @@ def enviar_peticion(url, body):
 
     if respuesta.status_code == 429 or respuesta.status_code >= 500:
         raise TimeoutError(
-            "El proveedor no pudo procesar la petición. "
-            "Hay que esperar y reintentar."
-        )
+            f"Error HTTP {respuesta.status_code}: "
+            f"{respuesta.text}"
+    )
 
     try:
         respuesta.raise_for_status()
