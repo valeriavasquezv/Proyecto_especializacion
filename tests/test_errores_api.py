@@ -34,6 +34,17 @@ class TestErroresAPI(unittest.TestCase):
         with self.assertRaises(TimeoutError):
             enviar_peticion("https://ejemplo.com", {})
 
+    @patch("src.consumir_gemini.requests.post")
+    def test_respuesta_exitosa(self, mock_post):
+        respuesta = Mock()
+        respuesta.status_code = 200
+        respuesta.json.return_value = {"texto": "Respuesta simulada"}
+        mock_post.return_value = respuesta
+
+        resultado = enviar_peticion("https://ejemplo.com", {})
+
+        self.assertEqual(resultado, {"texto": "Respuesta simulada"})
+
 
 if __name__ == "__main__":
     unittest.main()
