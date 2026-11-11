@@ -92,17 +92,17 @@ if __name__ == "__main__":
     print(resultado)
 
     referencia = procesar_texto("Python no es un lenguaje compilado.")
-respuesta = procesar_texto("Python es un lenguaje compilado.")
+    respuesta = procesar_texto("Python es un lenguaje compilado.")
 
-resultado = calcular_precision_cobertura_f1(referencia, respuesta)
+    resultado = calcular_precision_cobertura_f1(referencia, respuesta)
 
-print("\nEJEMPLO DE NEGACION:")
-print(resultado)
+    print("\nEJEMPLO DE NEGACION:")
+    print(resultado)
 
-referencia = procesar_texto("Python fue creado en 1991.")
-respuesta = procesar_texto("Python fue creado en 1989.")
+    referencia = procesar_texto("Python fue creado en 1991.")
+    respuesta = procesar_texto("Python fue creado en 1989.")
 
-resultado = calcular_precision_cobertura_f1(referencia, respuesta)
+    resultado = calcular_precision_cobertura_f1(referencia, respuesta)
 
-print("\nEJEMPLO DE DATO EQUIVOCADO:")
-print(resultado)
+    print("\nEJEMPLO DE DATO EQUIVOCADO:")
+    print(resultado)
