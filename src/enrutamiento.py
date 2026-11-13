@@ -1,9 +1,16 @@
+import logging
+
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import (
     RunnableBranch,
-    RunnablePassthrough
+    RunnablePassthrough,
+    RunnableLambda
 )
+
+# Registro de errores
+logger = logging.getLogger(__name__)
+
 
 def construir_paso_clasificacion(modelo):
 
@@ -28,6 +35,7 @@ def construir_paso_clasificacion(modelo):
         | StrOutputParser()
         | (lambda texto: texto.strip().lower())
     )
+
 
 def construir_cadena_con_enrutamiento(
     paso_clasificacion,
@@ -61,6 +69,7 @@ def construir_cadena_con_enrutamiento(
         )
         | bifurcacion
     )
+
 
 def construir_rutas(modelo):
 
@@ -120,15 +129,56 @@ def construir_rutas(modelo):
         "mejora": cadena_mejora
     }
 
+
+def construir_cadena_problema_segura(cadena_problema):
+
+    # Respuesta alternativa si falla el análisis financiero
+    respuesta_respaldo = RunnableLambda(
+        lambda entrada: (
+            "No fue posible completar el análisis financiero "
+            "en este momento. Te recomendamos revisar tus "
+            "ingresos, costos, gastos y obligaciones antes "
+            "de tomar decisiones. Intenta nuevamente más tarde."
+        )
+    )
+
+    return cadena_problema.with_fallbacks(
+        [respuesta_respaldo]
+    )
+
+
 def construir_flujo_completo(modelo):
 
     paso_clasificacion = construir_paso_clasificacion(modelo)
 
     rutas = construir_rutas(modelo)
 
+    # Protege la ruta de problemas financieros
+    cadena_problema_segura = construir_cadena_problema_segura(
+        rutas["problema"]
+    )
+
     return construir_cadena_con_enrutamiento(
         paso_clasificacion=paso_clasificacion,
         cadena_consulta=rutas["consulta"],
-        cadena_problema=rutas["problema"],
+        cadena_problema=cadena_problema_segura,
         cadena_mejora=rutas["mejora"]
     )
+
+
+def procesar_mensaje_seguro(cadena, mensaje):
+
+    try:
+        return cadena.invoke(
+            {"mensaje": mensaje}
+        )
+
+    except Exception:
+        logger.exception(
+            "Error procesando solicitud financiera"
+        )
+
+        return (
+            "No pudimos procesar tu solicitud financiera "
+            "en este momento. Intenta nuevamente más tarde."
+        )

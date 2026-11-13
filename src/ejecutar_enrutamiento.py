@@ -3,8 +3,10 @@ import os
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from src.enrutamiento import construir_flujo_completo
-
+from src.enrutamiento import (
+    construir_flujo_completo,
+    procesar_mensaje_seguro
+)
 
 load_dotenv()
 
@@ -15,7 +17,6 @@ modelo = ChatGoogleGenerativeAI(
 )
 
 cadena = construir_flujo_completo(modelo)
-
 
 solicitudes = [
     "¿Qué significa el margen de rentabilidad de una empresa?",
@@ -28,9 +29,10 @@ for mensaje in solicitudes:
     print("\n" + "=" * 60)
     print("SOLICITUD:", mensaje)
 
-    resultado = cadena.invoke({
-        "mensaje": mensaje
-    })
+    resultado = procesar_mensaje_seguro(
+        cadena,
+        mensaje
+    )
 
     print("\nRESPUESTA PYME COPILOT:")
     print(resultado)
