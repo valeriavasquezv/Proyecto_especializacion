@@ -1,4 +1,6 @@
+from pydantic import BaseModel, Field
 from langchain_core.tools import tool
+from langchain_core.runnables import RunnableLambda
 from langchain_core.prompts import (
     ChatPromptTemplate,
     MessagesPlaceholder
@@ -7,8 +9,41 @@ from langchain_classic.agents import (
     AgentExecutor,
     create_tool_calling_agent
 )
+from langchain_core.chat_history import (
+    InMemoryChatMessageHistory
+)
+from langchain_core.runnables.history import (
+    RunnableWithMessageHistory
+)
 
-@tool
+class ArgumentosIndicadoresFinancieros(BaseModel):
+
+    ingresos: float = Field(
+        description=(
+            "Ingresos totales de la empresa "
+            "en el período analizado."
+        )
+    )
+
+    costos: float = Field(
+        description=(
+            "Costos asociados a la producción "
+            "o prestación de servicios."
+        )
+    )
+
+    gastos: float = Field(
+        description=(
+            "Gastos operacionales y administrativos "
+            "de la empresa."
+        )
+    )
+
+
+@tool(
+    "calcular_indicadores_financieros",
+    args_schema=ArgumentosIndicadoresFinancieros
+)
 def calcular_indicadores_financieros(
     ingresos: float,
     costos: float,
@@ -101,38 +136,25 @@ def construir_agente(modelo):
     ]
 
     prompt_agente = ChatPromptTemplate.from_messages([
-        (
-            
-            """
-            Eres PymeCopilot AI, un asistente especializado
-            en gestión y análisis financiero empresarial.
+    ("system", """
+        Eres PymeCopilot AI, un asistente especializado
+        en gestión y análisis financiero empresarial.
 
-            Dispones de herramientas para realizar cálculos
-            y consultar conceptos financieros específicos.
+        Utiliza las herramientas disponibles cuando
+        necesites realizar cálculos financieros o
+        consultar conceptos.
 
-            Decide cuándo necesitas utilizar una herramienta.
+        Puedes utilizar más de una herramienta si
+        la solicitud lo requiere.
 
-            Utiliza las herramientas cuando necesites realizar
-            cálculos o consultar conceptos financieros específicos.
-
-            Para preguntas generales, explicaciones o consejos
-            empresariales, responde directamente sin utilizar
-            herramientas.
-
-            Puedes utilizar varias herramientas si la solicitud
-            lo requiere.
-
-            No inventes cifras ni resultados financieros.
-            Si faltan datos para realizar un cálculo, solicita
-            la información necesaria.
-
-            Explica los resultados de manera clara y profesional.
-            """
-
-        ),
-        ("human", "{entrada}"),
-        MessagesPlaceholder("agent_scratchpad")
-    ])
+        No inventes cifras ni resultados financieros.
+        Si faltan datos, solicita la información necesaria.
+        Explica los resultados de manera clara y profesional.
+    """),
+    MessagesPlaceholder("chat_history"),
+    ("human", "{entrada}"),
+    MessagesPlaceholder("agent_scratchpad")
+])
 
     agente = create_tool_calling_agent(
         modelo,
@@ -149,3 +171,47 @@ def construir_agente(modelo):
     )
 
     return ejecutor_agente
+
+# Historial independiente por sesión
+historiales = {}
+
+def obtener_historial(session_id: str):
+    if session_id not in historiales:
+        historiales[session_id] = InMemoryChatMessageHistory()
+
+    return historiales[session_id]
+
+def construir_agente_con_memoria(modelo):
+    ejecutor = construir_agente(modelo)
+
+    def ejecutar_y_normalizar(entrada):
+        resultado = ejecutor.invoke(entrada)
+
+        salida = resultado.get("output", "")
+
+        # Normalizar respuestas estructuradas de Gemini
+        if isinstance(salida, list):
+            salida = "".join(
+                bloque.get("text", "")
+                for bloque in salida
+                if isinstance(bloque, dict)
+                and bloque.get("type") == "text"
+            )
+
+        resultado["output"] = salida
+
+        return resultado
+
+    ejecutor_normalizado = RunnableLambda(
+        ejecutar_y_normalizar
+    )
+
+    agente_con_memoria = RunnableWithMessageHistory(
+        ejecutor_normalizado,
+        obtener_historial,
+        input_messages_key="entrada",
+        history_messages_key="chat_history",
+        output_messages_key="output"
+    )
+
+    return agente_con_memoria

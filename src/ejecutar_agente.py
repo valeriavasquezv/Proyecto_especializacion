@@ -1,9 +1,8 @@
-
 import os
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from src.agente_financiero import construir_agente
+from src.agente_financiero import construir_agente_con_memoria
 
 load_dotenv()
 
@@ -13,21 +12,28 @@ modelo = ChatGoogleGenerativeAI(
     temperature=0
 )
 
-ejecutor = construir_agente(modelo)
+ejecutor = construir_agente_con_memoria(modelo)
 
 consultas = [
     "¿Por qué es importante que una empresa tenga "
     "una buena gestión financiera?"
 ]
 
+config = {
+    "configurable": {
+        "session_id": "empresa_001"
+    }
+}
+
 for consulta in consultas:
 
     print("\n" + "=" * 70)
     print("CONSULTA:", consulta)
 
-    resultado = ejecutor.invoke({
-        "entrada": consulta
-    })
+    resultado = ejecutor.invoke(
+        {"entrada": consulta},
+        config=config
+    )
 
     print("\nRESPUESTA:", resultado["output"])
 
@@ -37,3 +43,4 @@ for consulta in consultas:
         print("Herramienta:", accion.tool)
         print("Argumentos:", accion.tool_input)
         print("Resultado:", observacion)
+
