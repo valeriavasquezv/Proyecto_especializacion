@@ -1,8 +1,8 @@
 import os
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
-
 from src.agente_financiero import construir_agente_con_memoria
+from src.trazabilidad import registrar_traza
 
 load_dotenv()
 
@@ -19,6 +19,11 @@ consultas = [
     "una buena gestión financiera?"
 ]
 
+consultas = [
+    "¿Por qué es importante que una empresa tenga una buena gestión financiera?",
+    "Calcula mis indicadores financieros: ingresos 10000000, costos 5000000 y gastos 2000000."
+]
+
 config = {
     "configurable": {
         "session_id": "empresa_001"
@@ -31,9 +36,14 @@ for consulta in consultas:
     print("CONSULTA:", consulta)
 
     resultado = ejecutor.invoke(
-        {"entrada": consulta},
-        config=config
-    )
+    {"entrada": consulta},
+    config=config
+)
+    registrar_traza(
+    session_id="empresa_001",
+    entrada=consulta,
+    resultado=resultado
+)
 
     print("\nRESPUESTA:", resultado["output"])
 
