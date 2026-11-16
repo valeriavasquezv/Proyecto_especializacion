@@ -1,46 +1,122 @@
-# Miniaplicación de IA Generativa para estructurar información de recetas
+# PymeCopilot AI
+## Agente inteligente para la gestión financiera empresarial
 
-## 1. Descripción del proyecto
+### 1. Descripción del proyecto
 
-Este proyecto forma parte de la Especialización en Desarrollo con IA Generativa de Accenture.
+PymeCopilot AI es un prototipo de asistente financiero empresarial desarrollado como proyecto integrador de la Especialización en Desarrollo con IA Generativa de Accenture.
 
-La miniaplicación utiliza la API de Gemini para procesar información textual relacionada con recetas e ingredientes y organizarla en estructuras JSON. Permite extraer datos de productos, identificar información faltante y estructurar los ingredientes con sus cantidades, unidades y precios cuando están disponibles.
+Su objetivo es apoyar a pequeñas y medianas empresas (PYMEs) en la comprensión y análisis de información financiera, facilitando el acceso a cálculos, indicadores y explicaciones que contribuyan a una mejor toma de decisiones.
 
-El proyecto constituye una primera etapa técnica de una solución orientada a apoyar la gestión de pequeñas y medianas empresas (PYMEs).
+El proyecto utiliza inteligencia artificial generativa mediante Google Gemini, junto con herramientas financieras deterministas desarrolladas en Python y mecanismos de orquestación con LangChain.
 
-### Visión futura
+La solución busca evolucionar hacia una plataforma integral de inteligencia empresarial con IA, orientada a PYMEs y empresas medianas.
 
-La visión del proyecto es evolucionar hacia un ayudante financiero para PYMEs que facilite la gestión de costos y precios de venta. Entre sus posibles funcionalidades futuras se encuentran el cálculo de costos unitarios, la estimación de precios según márgenes deseados, el análisis de rentabilidad y el cálculo del punto de equilibrio.
+### 2. Objetivos
 
-Estas funcionalidades forman parte de la evolución prevista y no se consideran implementadas en la versión actual.
+- Facilitar la comprensión de conceptos financieros empresariales.
+- Automatizar cálculos básicos de rentabilidad.
+- Interpretar consultas financieras mediante un agente inteligente.
+- Incorporar herramientas especializadas para resolver solicitudes.
+- Mantener memoria conversacional por sesión.
+- Registrar las interacciones y herramientas utilizadas para facilitar la trazabilidad.
 
-## 2. Funcionalidades actuales
+### 3. Funcionalidades implementadas
 
-- Consumo de la API de Gemini mediante peticiones HTTP.
-- Uso de instrucciones de sistema y esquemas para orientar las respuestas estructuradas.
-- Extracción y organización de información de recetas e ingredientes.
-- Identificación de datos faltantes en la información recibida.
-- Procesamiento de respuestas JSON.
-- Pruebas de consistencia del banco de prompts.
-- Gestión de credenciales mediante variables de entorno.
+**3.1. Agente financiero inteligente**
 
-## 3. Tecnologías utilizadas
+Agente desarrollado con LangChain y conectado a Google Gemini.
 
-- Python.
-- API de Google Gemini.
-- `requests` para las peticiones HTTP.
-- `python-dotenv` para cargar variables de entorno.
-- `json` para procesar las respuestas estructuradas.
+Permite interpretar consultas financieras, generar explicaciones y decidir cuándo utilizar las herramientas disponibles.
 
-## 4. Requisitos previos
+**3.2. Cálculo de indicadores financieros**
 
-Para instalar y ejecutar el proyecto se necesita:
+Herramienta determinista que recibe ingresos, costos y gastos, y calcula:
 
-- Python instalado.
-- Git instalado.
-- Una clave válida de la API de Gemini, obtenida desde [Google AI Studio](https://aistudio.google.com/app/apikey).
+- Utilidad.
+- Margen de utilidad.
+- Porcentaje de costos sobre ingresos.
+- Porcentaje de gastos sobre ingresos.
 
-## 5. Instalación
+**3.3. Consulta de conceptos financieros**
+
+Herramienta de consulta de definiciones para los siguientes conceptos:
+
+- Liquidez.
+- EBITDA.
+- Capital de trabajo.
+- Punto de equilibrio.
+- Margen de utilidad.
+
+**3.4. Memoria conversacional**
+
+Implementación de memoria independiente por identificador de sesión, permitiendo mantener el contexto de las conversaciones durante la ejecución del programa.
+
+La memoria actual se mantiene en memoria RAM y no tiene persistencia entre reinicios.
+
+**3.5. Enrutamiento de solicitudes**
+
+Módulo complementario que clasifica las solicitudes financieras en tres categorías:
+
+- Consulta.
+- Problema.
+- Mejora.
+
+Cada categoría dispone de una cadena especializada de procesamiento.
+
+Este módulo se encuentra desarrollado de forma independiente y no está integrado todavía en el flujo principal del agente.
+
+**3.6. Trazabilidad**
+
+Registro de las interacciones en formato JSONL, incluyendo:
+
+- Fecha y hora.
+- Identificador de sesión.
+- Consulta del usuario.
+- Herramientas utilizadas.
+- Argumentos entregados a las herramientas.
+- Resultados obtenidos.
+- Respuesta final del agente.
+
+**3.7. Manejo de errores y reintentos**
+
+El proyecto incorpora mecanismos para gestionar errores de conexión, respuestas de la API y reintentos ante fallos temporales.
+
+### 4. Tecnologías utilizadas
+
+- Python 3.11.
+- Google Gemini API.
+- LangChain.
+- LangChain Classic.
+- LangGraph.
+- Pydantic.
+- Requests.
+- Python-dotenv.
+- Pytest.
+
+### 5. Arquitectura general
+
+El proyecto utiliza una arquitectura modular que separa la ejecución del agente, las herramientas financieras y la trazabilidad.
+
+Flujo principal:
+
+1. El usuario ingresa una consulta.
+2. El punto de entrada inicializa el modelo Gemini.
+3. Se construye el agente financiero.
+4. El agente interpreta la solicitud.
+5. Si corresponde, utiliza una herramienta financiera.
+6. Se genera la respuesta.
+7. Se registra la interacción en el archivo de trazabilidad.
+
+### 6. Requisitos previos
+
+Para ejecutar el proyecto se necesita:
+
+- Python 3.11.
+- Git.
+- Conexión a internet.
+- Una clave válida de Google Gemini API, obtenida desde [Google AI Studio](https://aistudio.google.com/app/apikey).
+
+### 7. Instalación
 
 Clonar el repositorio:
 
@@ -61,32 +137,32 @@ Activar el entorno virtual en Windows PowerShell:
 .\.venv\Scripts\Activate.ps1
 ```
 
-Instalar las dependencias:
+Actualizar pip e instalar las dependencias:
 
 ```powershell
 python -m pip install --upgrade pip
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
-## 6. Configuración de credenciales
+### 8. Configuración de credenciales
 
-Crear un archivo `.env` a partir de la plantilla:
+Crear el archivo `.env` a partir de la plantilla:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-Abrir `.env` y configurar una clave propia de Gemini:
+Configurar la clave de Gemini dentro del archivo `.env`:
 
 ```dotenv
 GEMINI_API_KEY=tu_clave_personal
 ```
 
-Reemplazar `tu_clave_personal` por una clave válida. No se deben compartir ni publicar credenciales reales.
+No se deben publicar ni compartir credenciales reales.
 
-El archivo `.env` está excluido del control de versiones mediante `.gitignore`. El archivo `.env.example` debe contener únicamente valores de ejemplo.
+El archivo `.env` debe permanecer excluido del control de versiones mediante `.gitignore`.
 
-## 7. Ejecución de la miniaplicación
+### 9. Ejecución
 
 Desde la carpeta raíz del proyecto, ejecutar:
 
@@ -94,52 +170,108 @@ Desde la carpeta raíz del proyecto, ejecutar:
 python main.py
 ```
 
-La aplicación envía una consulta a Gemini para estructurar información de una receta y muestra el resultado en formato JSON.
+La versión actual ejecuta consultas de demostración que permiten comprobar:
 
-La salida incluye el producto y sus ingredientes, con los nombres, cantidades, unidades y precios disponibles en la información procesada.
+- La capacidad del agente para responder consultas generales sobre gestión financiera.
+- La utilización de la herramienta de cálculo de indicadores financieros.
+- La generación de respuestas y el registro de las herramientas utilizadas.
 
-La ejecución requiere conexión a internet y una clave válida de Gemini. La disponibilidad del servicio puede afectar temporalmente las solicitudes.
+La aplicación funciona actualmente mediante consola. No dispone todavía de una interfaz web.
 
-## 8. Banco y pruebas de consistencia de prompts
+### 10. Pruebas automatizadas
 
-El directorio `prompts/` contiene el banco de prompts y el script de pruebas de consistencia.
+El proyecto cuenta con pruebas automatizadas utilizando Pytest.
 
-Para ejecutar las pruebas:
+Para ejecutarlas:
 
 ```powershell
-python prompts/test_consistencia.py
+python -m pytest tests/ -v
 ```
 
-El script realiza solicitudes a la API, evalúa las respuestas y registra los resultados en `prompts/registro_resultados.json`.
+**Resultado de validación local:**
 
-Las pruebas requieren una clave válida de Gemini. Los errores temporales del servicio, como las respuestas HTTP 503, pueden afectar los resultados.
+- 20 pruebas ejecutadas.
+- 20 pruebas aprobadas.
+- Tiempo de ejecución registrado: 3,30 segundos.
 
-## 9. Estructura del repositorio
+Las pruebas abarcan cadenas, cliente Gemini, reintentos, enrutamiento, manejo de errores y procesamiento de texto.
 
-- `main.py`: punto de entrada de la miniaplicación.
-- `src/consumir_gemini.py`: funciones para preparar peticiones, enviar solicitudes a Gemini y procesar las respuestas.
-- `prompts/banco.py`: banco de prompts y esquemas de respuesta.
-- `prompts/test_consistencia.py`: pruebas de consistencia de los prompts.
-- `prompts/registro_resultados.json`: registro de resultados de las pruebas.
-- `docs/`: documentación técnica, decisiones de arquitectura, diagramas y evidencias.
-- `tests/`: directorio destinado a las pruebas del proyecto.
-- `requirements.txt`: dependencias de Python.
-- `.env.example`: plantilla de configuración de credenciales.
-- `.gitignore`: archivos y directorios excluidos del control de versiones.
+### 11. Estructura del proyecto
 
-## 10. Seguridad y buenas prácticas
+```text
+Proyecto_especializacion/
+│
+├── main.py
+├── README.md
+├── requirements.txt
+├── .env.example
+├── .gitignore
+│
+├── src/
+│   ├── agente_financiero.py
+│   ├── ejecutar_agente.py
+│   ├── trazabilidad.py
+│   ├── enrutamiento.py
+│   ├── cadena_tres_pasos.py
+│   └── módulos de integración y soporte
+│
+├── tests/
+│   └── pruebas automatizadas
+│
+├── demos/
+│   └── demostraciones de funcionalidades
+│
+├── evaluacion/
+│   ├── datos/
+│   └── resultados/
+│
+├── prompts/
+│
+└── docs/
+    └── documentación técnica
+```
 
-- No escribir claves de API, contraseñas ni tokens directamente en el código.
-- No subir el archivo `.env` al repositorio.
-- Mantener `.env.example` libre de credenciales reales.
-- Utilizar un entorno virtual propio para el proyecto.
-- Registrar los cambios mediante commits en Git.
+### 12. Limitaciones actuales
 
-## 11. Evolución del proyecto
+La versión actual corresponde a un prototipo funcional y presenta las siguientes limitaciones:
 
-El proyecto se ampliará progresivamente durante los siguientes bloques de la especialización.
+- La memoria conversacional no tiene persistencia.
+- Los cálculos financieros están limitados a los indicadores implementados.
+- Las definiciones financieras están disponibles mediante un conjunto acotado de conceptos.
+- El módulo de enrutamiento todavía no está integrado en el flujo principal.
+- La ejecución se realiza mediante consola.
+- No existe todavía conexión con sistemas contables o bases de datos empresariales.
 
-La evolución prevista es convertir la miniaplicación en un ayudante financiero para PYMEs, incorporando gradualmente herramientas para calcular costos, apoyar la definición de precios de venta y analizar la rentabilidad de productos.
+### 13. Evolución futura
 
-La incorporación de estas funcionalidades dependerá de los requisitos y objetivos de los siguientes hitos del programa.
+La visión de PymeCopilot AI es evolucionar hacia una plataforma de inteligencia empresarial con IA, que permita a las organizaciones comprender su situación financiera, anticipar riesgos y apoyar sus decisiones.
+
+Entre las funcionalidades futuras se consideran:
+
+- Análisis de liquidez y flujo de caja.
+- Análisis de capital de trabajo.
+- Evaluación de costos y rentabilidad.
+- Proyecciones financieras.
+- Presupuestos y análisis de desviaciones.
+- Detección de riesgos financieros.
+- Integración de datos desde sistemas empresariales.
+- Memoria persistente por empresa.
+- Interfaz web y paneles de indicadores.
+
+Estas funcionalidades corresponden a objetivos de desarrollo futuro y no forman parte de la implementación actual.
+
+### 14. Seguridad y buenas prácticas
+
+- Mantener las credenciales fuera del código fuente.
+- No publicar archivos `.env`.
+- Utilizar entornos virtuales.
+- Mantener las dependencias declaradas en `requirements.txt`.
+- Ejecutar las pruebas automatizadas después de realizar cambios.
+- Evitar publicar archivos de trazabilidad que puedan contener información sensible.
+
+### 15. Autoría y contexto académico
+
+Proyecto desarrollado en el marco de la Especialización en Desarrollo con IA Generativa de Accenture, Skillnest.
+
+**PymeCopilot AI: Inteligencia artificial aplicada a la gestión financiera empresarial.**
 

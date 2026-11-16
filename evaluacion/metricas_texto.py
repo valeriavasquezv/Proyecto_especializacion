@@ -1,5 +1,5 @@
 from collections import Counter
-from src.pipeline_texto import procesar_texto
+from evaluacion.pipeline_texto import procesar_texto
 
 def contar_coincidencias(tokens_referencia, tokens_respuesta):
 

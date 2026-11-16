@@ -1,5 +1,5 @@
 
-from src.pipeline_texto import procesar_texto
+from evaluacion.pipeline_texto import procesar_texto
 
 
 # ==========================================
