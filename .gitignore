@@ -30,3 +30,10 @@ trazas_agente.jsonl
 # Archivos temporales
 *.tmp
 *.bak
+
+# Entorno virtual nuevo
+.venv_chroma_test/
+
+# Bases vectoriales generadas localmente
+vectorstore/
+vectorstore_*/
