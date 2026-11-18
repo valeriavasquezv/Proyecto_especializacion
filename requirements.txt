@@ -55,3 +55,4 @@ zstandard==0.25.0
 langchain-classic==1.0.8
 langchain-chroma==1.1.0
 chromadb==1.5.9
+langchain-text-splitters==1.1.3
