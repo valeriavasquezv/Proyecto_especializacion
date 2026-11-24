@@ -1,0 +1,55 @@
+
+=======================================================
+FECHA: 2026-11-24 14:20
+K: 1
+CHUNK SIZE: 200
+CHUNK OVERLAP: 30
+TOTAL DE PREGUNTAS: 10
+PROMEDIO PRECISION@1: 100.00%
+PROMEDIO RECALL@1: 100.00%
+PROMEDIO F1: 100.00%
+=======================================================
+
+=======================================================
+FECHA: 2026-11-24 14:21
+K: 2
+CHUNK SIZE: 200
+CHUNK OVERLAP: 30
+TOTAL DE PREGUNTAS: 10
+PROMEDIO PRECISION@2: 50.00%
+PROMEDIO RECALL@2: 100.00%
+PROMEDIO F1: 66.67%
+=======================================================
+
+=======================================================
+FECHA: 2026-11-24 14:22
+K: 3
+CHUNK SIZE: 200
+CHUNK OVERLAP: 30
+TOTAL DE PREGUNTAS: 10
+PROMEDIO PRECISION@3: 33.33%
+PROMEDIO RECALL@3: 100.00%
+PROMEDIO F1: 50.00%
+=======================================================
+
+=======================================================
+FECHA: 2026-11-24 14:23
+K: 5
+CHUNK SIZE: 200
+CHUNK OVERLAP: 30
+TOTAL DE PREGUNTAS: 10
+PROMEDIO PRECISION@5: 20.00%
+PROMEDIO RECALL@5: 100.00%
+PROMEDIO F1: 33.33%
+=======================================================
+
+=======================================================
+FECHA: 2026-11-24 15:38
+K: 1
+CHUNK SIZE: 200
+CHUNK OVERLAP: 30
+TOTAL DE PREGUNTAS: 10
+PROMEDIO PRECISION@1: 100.00%
+PROMEDIO RECALL@1: 100.00%
+PROMEDIO F1: 100.00%
+=======================================================
