@@ -45,22 +45,6 @@ def calcular_f1(precision, recall):
     return 2 * (precision * recall) / (precision + recall)
 
 
-if __name__ == "__main__":
-    ids_recuperados = ["chunk_0", "chunk_2", "chunk_4"]
-    ids_relevantes = {"chunk_0"}
-
-    precision = calcular_precision_at_k(
-        ids_recuperados, ids_relevantes
-    )
-    recall = calcular_recall_at_k(
-        ids_recuperados, ids_relevantes
-    )
-    f1 = calcular_f1(precision, recall)
-
-    print(f"Precision@3: {precision:.2%}")
-    print(f"Recall@3: {recall:.2%}")
-    print(f"F1: {f1:.2%}")
-
 CASOS_EVALUACION = [
     {
         "pregunta": "¿Qué calcula la herramienta de indicadores financieros?",
@@ -182,3 +166,11 @@ def evaluar_casos(k=3):
     print("Resultados guardados en resultados_evaluacion.txt")
 
     return resultados
+
+if __name__ == "__main__":
+    for k in [1, 2, 3]:
+        print(f"\n\n{'#' * 55}")
+        print(f"EVALUACIÓN CON K={k}")
+        print(f"{'#' * 55}")
+
+        evaluar_casos(k=k)
