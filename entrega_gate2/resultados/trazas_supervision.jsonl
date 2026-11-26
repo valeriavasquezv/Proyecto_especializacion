@@ -1,0 +1,2 @@
+{"timestamp": "2026-11-26T00:27:45.179767+00:00", "session_id": "prueba_gate2_001", "evento": "supervision_humana", "aprobacion": true, "estado": "aprobado"}
+{"timestamp": "2026-11-26T02:04:47.350239+00:00", "session_id": "prueba_gate2_supervision", "evento": "supervision_humana", "aprobacion": true, "estado": "aprobado"}

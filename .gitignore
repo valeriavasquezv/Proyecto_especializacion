@@ -26,6 +26,8 @@ Thumbs.db
 # Logs y trazabilidad local
 *.log
 trazas_agente.jsonl
+trazas_supervision.jsonl
+!entrega_gate2/resultados/trazas_supervision.jsonl
 
 # Archivos temporales
 *.tmp

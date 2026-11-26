@@ -9,25 +9,28 @@ def registrar_traza(
     resultado: dict
 ) -> None:
     """
-    Guarda una interacción del agente en un archivo JSONL.
-    Registra la entrada, las herramientas utilizadas
-    y la respuesta final.
+    Registra metadatos técnicos de una interacción.
+
+    No almacena preguntas, respuestas, argumentos
+    de herramientas ni resultados financieros.
     """
+
+    acciones = resultado.get("intermediate_steps", [])
+
+    herramientas = [
+        accion.tool
+        for accion, observacion in acciones
+    ]
 
     registro = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "session_id": session_id,
-        "entrada": entrada,
-        "acciones": [
-            {
-                "herramienta": accion.tool,
-                "argumentos": accion.tool_input,
-                "observacion": observacion
-            }
-            for accion, observacion
-            in resultado.get("intermediate_steps", [])
-        ],
-        "respuesta_final": resultado["output"]
+        "evento": "interaccion_agente",
+        "entrada_registrada": False,
+        "respuesta_registrada": False,
+        "herramientas": herramientas,
+        "cantidad_herramientas": len(herramientas),
+        "estado": "completado"
     }
 
     with open(
@@ -63,10 +66,7 @@ def marcar_repeticiones_sospechosas(
 
     for registro in registros:
 
-        herramientas = [
-            accion["herramienta"]
-            for accion in registro.get("acciones", [])
-        ]
+        herramientas = registro.get("herramientas", [])
 
         for i in range(1, len(herramientas)):
 

@@ -55,6 +55,23 @@ def recuperar_documentos(pregunta, k=3):
 
     return retriever.invoke(pregunta)
 
+def recuperar_documentos_con_puntajes(pregunta, k=2):
+
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/gemini-embedding-001"
+    )
+
+    vectorstore = Chroma(
+        persist_directory="vectorstore/",
+        embedding_function=embeddings
+    )
+
+    resultados = vectorstore.similarity_search_with_relevance_scores(
+        pregunta,
+        k=k
+    )
+
+    return resultados
 
 def construir_prompt(pregunta, k=3):
     chunks = recuperar_documentos(pregunta, k)
@@ -70,15 +87,46 @@ def construir_prompt(pregunta, k=3):
 
 
 import re
-from src.consumir_gemini import (
-    armar_peticion,
-    enviar_peticion,
-    extraer_texto
-)
+from src.cliente import consultar_modelo
 
 
-def generar_respuesta(pregunta, k=3):
-    prompt, citas = construir_prompt(pregunta, k)
+
+def generar_respuesta(pregunta, k=2):
+
+    UMBRAL_RELEVANCIA = 0.52
+
+    resultados = recuperar_documentos_con_puntajes(
+        pregunta,
+        k=k
+    )
+
+    if not resultados:
+        return (
+            "No encontré información suficiente para responder.",
+            {}
+        )
+
+    puntaje_maximo = max(
+        puntaje for doc, puntaje in resultados
+    )
+
+    if puntaje_maximo < UMBRAL_RELEVANCIA:
+        return (
+            "No encontré información suficientemente relevante "
+            "en la base de conocimiento para responder esta consulta.",
+            {}
+        )
+
+    chunks = [
+        doc for doc, puntaje in resultados
+    ]
+
+    contexto, citas = formatear_contexto(chunks)
+
+    prompt = PROMPT_TEMPLATE.format(
+        contexto=contexto,
+        pregunta=pregunta
+    )
 
     system_instruction = (
         "Eres un asistente financiero. "
@@ -87,15 +135,10 @@ def generar_respuesta(pregunta, k=3):
         "Si la información no es suficiente, indícalo."
     )
 
-    url, body = armar_peticion(
-        pregunta_usuario=prompt,
+    respuesta = consultar_modelo(
+        pregunta=prompt,
         system_instruction=system_instruction
     )
-
-    respuesta_api = enviar_peticion(url, body)
-    respuesta = extraer_texto(respuesta_api)
-
-    import re
 
     numeros_citados = re.findall(r"\[(\d+)\]", respuesta)
 
