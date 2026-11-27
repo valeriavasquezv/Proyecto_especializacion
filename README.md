@@ -14,25 +14,27 @@ Utiliza Google Gemini, Python y herramientas financieras deterministas para inte
 - **Conceptos financieros:** permite consultar definiciones como EBITDA, liquidez y capital de trabajo.
 - **Memoria conversacional:** mantiene contexto por sesión durante la ejecución.
 - **Manejo de errores:** incorpora mecanismos de reintento ante fallos temporales.
-- **Recuperación RAG:** módulo experimental de recuperación de información documental.
+- **Recuperación RAG:** módulo experimental que recupera información desde una base documental utilizando ChromaDB.
 - **Trazabilidad:** registra metadatos técnicos sin almacenar preguntas, respuestas ni argumentos financieros.
 - **Supervisión humana:** módulo independiente que permite interrumpir un flujo, solicitar aprobación y registrar su resultado.
 
-Algunos módulos complementarios, como el enrutamiento, RAG y supervisión humana, todavía no están integrados completamente en el flujo principal del agente.
+**Estado de integración:** algunos módulos complementarios, como el enrutamiento, RAG y supervisión humana, todavía no están integrados completamente en el flujo principal del agente. Sus pruebas se ejecutan de manera independiente.
 
 ### 3. Tecnologías
 
-- Python 3.11
+- Python 3.13.7
 - Google Gemini API
 - LangChain y LangGraph
 - ChromaDB
 - Pydantic
 - Python-dotenv
+- NumPy
+- ONNX Runtime
 - Pytest
 
 ### 4. Requisitos
 
-- Python 3.11.
+- Python 3.13.7.
 - Git.
 - Conexión a internet.
 - Clave de Google Gemini API: [Google AI Studio](https://aistudio.google.com/app/apikey).
@@ -53,7 +55,7 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-Instalar dependencias:
+Instalar las dependencias:
 
 ```powershell
 python -m pip install --upgrade pip
@@ -66,7 +68,7 @@ Configurar las credenciales:
 Copy-Item .env.example .env
 ```
 
-Editar `.env` y agregar:
+Editar el archivo `.env` y agregar la clave personal:
 
 ```dotenv
 GEMINI_API_KEY=tu_clave_personal
@@ -74,9 +76,25 @@ GEMINI_API_KEY=tu_clave_personal
 
 No publicar ni compartir credenciales reales.
 
-### 6. Ejecución del proyecto
+### 6. Construcción del índice documental RAG
 
-Desde la carpeta raíz:
+La carpeta `vectorstore/` no se incluye en el repositorio, ya que contiene información generada localmente.
+
+Después de instalar las dependencias y configurar la API, reconstruir el índice ejecutando desde la carpeta raíz:
+
+```powershell
+python indexar_corpus.py
+```
+
+La ejecución debe finalizar indicando que los fragmentos fueron almacenados correctamente.
+
+El índice se guarda localmente en `vectorstore/` y utiliza ChromaDB para la recuperación documental.
+
+**Importante:** este paso debe realizarse antes de ejecutar las demostraciones y evaluaciones que requieren recuperación RAG.
+
+### 7. Ejecución del proyecto
+
+Desde la carpeta raíz y con el entorno virtual activado:
 
 ```powershell
 python main.py
@@ -84,7 +102,7 @@ python main.py
 
 La aplicación funciona mediante consola y permite probar las consultas financieras y herramientas implementadas.
 
-### 7. Evaluación de Gate 2
+### 8. Evaluación de Gate 2
 
 Se dispone de una carpeta específica para facilitar la revisión académica:
 
@@ -119,7 +137,7 @@ La carpeta también contiene evidencias documentales, métricas y registros de e
 
 **Importante:** estas pruebas validan módulos de manera independiente. Su aprobación no implica que todos estén integrados en el flujo principal del agente.
 
-### 8. Pruebas automatizadas
+### 9. Pruebas automatizadas
 
 Para ejecutar las pruebas generales del proyecto:
 
@@ -127,11 +145,22 @@ Para ejecutar las pruebas generales del proyecto:
 python -m pytest tests/ -v
 ```
 
-### Estructura principal
+### 10. Demostración de recuperación documental
+
+Para probar la recuperación de documentos desde ChromaDB:
+
+```powershell
+python Demos\prueba_recuperacion.py
+```
+
+La demostración muestra los documentos recuperados, sus fuentes y los puntajes de relevancia.
+
+### 11. Estructura principal
 
 ```text
 Proyecto_especializacion/
 ├── main.py
+├── indexar_corpus.py
 ├── README.md
 ├── requirements.txt
 ├── .env.example
@@ -140,17 +169,19 @@ Proyecto_especializacion/
 ├── Demos/
 ├── evaluacion/
 ├── corpus/
-├── vectorstore/
 ├── docs/
 └── entrega_gate2/
 ```
 
-### Limitaciones actuales
+La carpeta `vectorstore/` se genera localmente al ejecutar el indexador y no se versiona en Git.
+
+### 12. Limitaciones actuales
 
 - Memoria conversacional sin persistencia entre reinicios.
 - Funcionalidades financieras acotadas a las herramientas implementadas.
 - Módulos complementarios todavía no integrados completamente.
 - Recuperación RAG experimental, con precisión documental por mejorar.
+- Supervisión humana disponible como módulo independiente.
 - Aplicación disponible mediante consola, sin interfaz web.
 - Sin conexión directa a sistemas contables empresariales.
 
