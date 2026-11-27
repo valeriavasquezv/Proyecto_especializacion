@@ -45,71 +45,59 @@ def calcular_f1(precision, recall):
     return 2 * (precision * recall) / (precision + recall)
 
 
+
 CASOS_EVALUACION = [
     {
         "pregunta": "¿Qué calcula la herramienta de indicadores financieros?",
-        "ids_relevantes": {"chunk_0"}
+        "ids_relevantes": {"indicadores_financieros"}
     },
     {
         "pregunta": "¿Qué condición deben cumplir los ingresos?",
-        "ids_relevantes": {"chunk_0"}
+        "ids_relevantes": {"indicadores_financieros"}
     },
     {
         "pregunta": "¿Qué conceptos financieros puede consultar el asistente?",
-        "ids_relevantes": {"chunk_1"}
+        "ids_relevantes": {"conceptos_financieros"}
     },
     {
         "pregunta": "¿Se puede consultar EBITDA?",
-        "ids_relevantes": {"chunk_1"}
+        "ids_relevantes": {"conceptos_financieros"}
     },
     {
         "pregunta": "¿Cuántas iteraciones puede ejecutar el agente?",
-        "ids_relevantes": {"chunk_2"}
+        "ids_relevantes": {"agente_financiero"}
     },
     {
         "pregunta": "¿Qué función cumple el agente financiero?",
-        "ids_relevantes": {"chunk_2"}
+        "ids_relevantes": {"agente_financiero"}
     },
     {
         "pregunta": "¿Qué datos utiliza Gemini para calcular el costo de una llamada?",
-        "ids_relevantes": {"chunk_3"}
+        "ids_relevantes": {"cliente_gemini"}
     },
     {
         "pregunta": "¿Qué contadores de tokens utiliza el cliente?",
-        "ids_relevantes": {"chunk_3"}
+        "ids_relevantes": {"cliente_gemini"}
     },
     {
         "pregunta": "¿Qué ocurre cuando se produce un TimeoutError?",
-        "ids_relevantes": {"chunk_4"}
+        "ids_relevantes": {"cliente_reintento"}
     },
     {
         "pregunta": "¿Qué errores no se vuelven a intentar?",
-        "ids_relevantes": {"chunk_4"}
+        "ids_relevantes": {"cliente_reintento"}
     }
 ]
 
 def recuperar_ids(pregunta, k=3):
-    from langchain_chroma import Chroma
-    from langchain_google_genai import GoogleGenerativeAIEmbeddings
+    from src.recuperacion_rag import recuperar_documentos
 
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/gemini-embedding-001"
-    )
+    documentos = recuperar_documentos(pregunta, k=k)
 
-    vectorstore = Chroma(
-        persist_directory="vectorstore/",
-        embedding_function=embeddings
-    )
-
-    vector_pregunta = embeddings.embed_query(pregunta)
-
-    resultado = vectorstore._collection.query(
-        query_embeddings=[vector_pregunta],
-        n_results=k
-    )
-
-    return resultado["ids"][0]
-
+    return [
+        doc.metadata.get("fuente", "desconocida")
+        for doc in documentos
+    ]
 
 def evaluar_casos(k=3):
     resultados = []

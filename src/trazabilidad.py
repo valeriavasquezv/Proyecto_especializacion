@@ -1,5 +1,6 @@
 
 import json
+import uuid
 from datetime import datetime, timezone
 
 
@@ -7,13 +8,15 @@ def registrar_traza(
     session_id: str,
     entrada: str,
     resultado: dict
-) -> None:
+) -> str:
     """
     Registra metadatos técnicos de una interacción.
 
     No almacena preguntas, respuestas, argumentos
     de herramientas ni resultados financieros.
     """
+
+    trace_id = str(uuid.uuid4())
 
     acciones = resultado.get("intermediate_steps", [])
 
@@ -23,6 +26,7 @@ def registrar_traza(
     ]
 
     registro = {
+        "trace_id": trace_id,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "session_id": session_id,
         "evento": "interaccion_agente",
@@ -42,6 +46,8 @@ def registrar_traza(
         archivo.write(
             json.dumps(registro, ensure_ascii=False) + "\n"
         )
+
+    return trace_id
 
 
 def marcar_repeticiones_sospechosas(

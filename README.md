@@ -14,11 +14,12 @@ Utiliza Google Gemini, Python y herramientas financieras deterministas para inte
 - **Conceptos financieros:** permite consultar definiciones como EBITDA, liquidez y capital de trabajo.
 - **Memoria conversacional:** mantiene contexto por sesión durante la ejecución.
 - **Manejo de errores:** incorpora mecanismos de reintento ante fallos temporales.
-- **Recuperación RAG:** módulo experimental que recupera información desde una base documental utilizando ChromaDB.
-- **Trazabilidad:** registra metadatos técnicos sin almacenar preguntas, respuestas ni argumentos financieros.
-- **Supervisión humana:** módulo independiente que permite interrumpir un flujo, solicitar aprobación y registrar su resultado.
+- **Recuperación RAG:** recupera información desde una base documental utilizando ChromaDB, evalúa la relevancia de los documentos y permite consultar información respaldada por fuentes.
+- **Seguridad RAG:** incorpora un filtro basado en patrones para detectar y descartar documentos que contienen instrucciones sospechosas antes de construir el contexto enviado al modelo.
+- **Trazabilidad:** registra metadatos técnicos de las interacciones, evitando almacenar preguntas, respuestas y argumentos financieros en los registros de trazabilidad.
+- **Supervisión humana:** incorpora mecanismos de interrupción y aprobación humana mediante HumanInTheLoopMiddleware, permitiendo controlar la ejecución de herramientas financieras y registrar las decisiones de aprobación o rechazo.
 
-**Estado de integración:** algunos módulos complementarios, como el enrutamiento, RAG y supervisión humana, todavía no están integrados completamente en el flujo principal del agente. Sus pruebas se ejecutan de manera independiente.
+**Estado de integración:** el agente financiero incorpora supervisión humana en la ejecución de herramientas. El módulo RAG se encuentra implementado como componente separado del flujo principal del agente, con recuperación documental, evaluación de relevancia, citas y filtrado de documentos sospechosos.
 
 ### 3. Tecnologías
 
@@ -92,6 +93,14 @@ El índice se guarda localmente en `vectorstore/` y utiliza ChromaDB para la rec
 
 **Importante:** este paso debe realizarse antes de ejecutar las demostraciones y evaluaciones que requieren recuperación RAG.
 
+El módulo de recuperación incorpora:
+
+- Búsqueda de documentos relevantes.
+- Evaluación mediante puntajes de relevancia.
+- Umbral mínimo de relevancia para evitar respuestas basadas en información insuficiente.
+- Identificación de fuentes utilizadas en las respuestas.
+- Detección y descarte de documentos que contienen patrones conocidos de inyección de instrucciones antes de construir el contexto enviado al modelo.
+
 ### 7. Ejecución del proyecto
 
 Desde la carpeta raíz y con el entorno virtual activado:
@@ -101,6 +110,14 @@ python main.py
 ```
 
 La aplicación funciona mediante consola y permite probar las consultas financieras y herramientas implementadas.
+
+Para ejecutar la demostración del agente con supervisión humana:
+
+```powershell
+python -m src.ejecutar_agente
+```
+
+Este módulo permite observar la interrupción de operaciones que requieren aprobación humana y el tratamiento de decisiones de aprobación o rechazo.
 
 ### 8. Evaluación de Gate 2
 
@@ -120,12 +137,22 @@ Para ejecutar las pruebas de Gate 2:
 python entrega_gate2\ejecutar_gate2.py
 ```
 
-El ejecutor realiza las siguientes comprobaciones:
+El ejecutor contempla las siguientes comprobaciones:
 
 1. Recuperación documental RAG.
 2. Evaluación de consultas y relevancia.
 3. Privacidad y trazabilidad.
 4. Supervisión humana y registro de aprobación.
+5. Evidencias y resultados de evaluación.
+
+Adicionalmente, se han realizado pruebas del filtro de seguridad RAG para verificar:
+
+- Detección de patrones sospechosos en documentos.
+- Descarte de documentos que contienen instrucciones maliciosas conocidas.
+- Exclusión de documentos descartados del contexto enviado al modelo.
+- Conservación de las fuentes correspondientes a los documentos legítimos.
+
+Las pruebas de supervisión humana contemplan escenarios de aprobación y rechazo de operaciones, verificando que una operación rechazada no ejecute el cálculo financiero.
 
 La salida completa se guarda en:
 
@@ -135,7 +162,7 @@ entrega_gate2/resultados/ejecucion_gate2.txt
 
 La carpeta también contiene evidencias documentales, métricas y registros de evaluación.
 
-**Importante:** estas pruebas validan módulos de manera independiente. Su aprobación no implica que todos estén integrados en el flujo principal del agente.
+**Importante:** las pruebas de componentes y las pruebas simuladas permiten verificar comportamientos específicos, pero no sustituyen una validación integral de todos los módulos en un entorno de ejecución real.
 
 ### 9. Pruebas automatizadas
 
@@ -165,12 +192,21 @@ Proyecto_especializacion/
 ├── requirements.txt
 ├── .env.example
 ├── src/
+│   ├── agente_financiero.py
+│   ├── agente_supervisado.py
+│   ├── ejecutar_agente.py
+│   ├── recuperacion_rag.py
+│   └── trazabilidad.py
 ├── tests/
 ├── Demos/
 ├── evaluacion/
 ├── corpus/
 ├── docs/
 └── entrega_gate2/
+    ├── ejecutar_gate2.py
+    ├── prueba_supervision.py
+    ├── evidencias/
+    └── resultados/
 ```
 
 La carpeta `vectorstore/` se genera localmente al ejecutar el indexador y no se versiona en Git.
@@ -179,11 +215,13 @@ La carpeta `vectorstore/` se genera localmente al ejecutar el indexador y no se 
 
 - Memoria conversacional sin persistencia entre reinicios.
 - Funcionalidades financieras acotadas a las herramientas implementadas.
-- Módulos complementarios todavía no integrados completamente.
-- Recuperación RAG experimental, con precisión documental por mejorar.
-- Supervisión humana disponible como módulo independiente.
+- Recuperación RAG disponible como módulo separado del flujo principal del agente.
+- Filtro de inyección de instrucciones basado en patrones conocidos; no constituye una protección exhaustiva frente a todas las formas de prompt injection.
+- Umbral de relevancia sujeto a evaluación y ajuste según el corpus documental.
+- Supervisión humana implementada para controlar la ejecución de herramientas financieras.
 - Aplicación disponible mediante consola, sin interfaz web.
 - Sin conexión directa a sistemas contables empresariales.
+- Requiere validación adicional en escenarios reales antes de su utilización para decisiones financieras empresariales.
 
 ### Autoría
 

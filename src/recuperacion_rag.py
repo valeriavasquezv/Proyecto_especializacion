@@ -90,6 +90,41 @@ import re
 from src.cliente import consultar_modelo
 
 
+PATRONES_SOSPECHOSOS = [
+    r"ignora(?:r|\s+las)?\s+(?:todas\s+las\s+)?instrucciones\s+(?:anteriores|previas)",
+    r"ignore\s+(?:all\s+)?(?:previous|prior)\s+instructions",
+    r"olvida\s+(?:todo\s+lo\s+)?anterior",
+    r"nuevo\s+sistema\s*:",
+    r"system\s*prompt\s*:",
+    r"revela\s+tu\s+prompt",
+]
+
+
+def detectar_inyeccion(texto):
+    texto_normalizado = texto.lower()
+    return [
+        patron
+        for patron in PATRONES_SOSPECHOSOS
+        if re.search(patron, texto_normalizado)
+    ]
+
+
+def filtrar_documentos_sospechosos(documentos):
+    limpios = []
+    descartados = []
+
+    for documento in documentos:
+        coincidencias = detectar_inyeccion(documento.page_content)
+
+        if coincidencias:
+            descartados.append(documento)
+        else:
+            limpios.append(documento)
+
+    return limpios, descartados
+
+
+
 
 def generar_respuesta(pregunta, k=2):
 
@@ -120,6 +155,14 @@ def generar_respuesta(pregunta, k=2):
     chunks = [
         doc for doc, puntaje in resultados
     ]
+
+    chunks, descartados = filtrar_documentos_sospechosos(chunks)
+
+    if not chunks:
+        return (
+            "No encontr? informaci?n segura y suficiente para responder.",
+            {}
+        )
 
     contexto, citas = formatear_contexto(chunks)
 

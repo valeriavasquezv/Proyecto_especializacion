@@ -39,3 +39,4 @@ trazas_supervision.jsonl
 # Bases vectoriales generadas localmente
 vectorstore/
 vectorstore_*/
+trazas_agente_respaldo.jsonl

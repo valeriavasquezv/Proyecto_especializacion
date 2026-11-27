@@ -1,2 +1,4 @@
 {"timestamp": "2026-11-26T00:27:45.179767+00:00", "session_id": "prueba_gate2_001", "evento": "supervision_humana", "aprobacion": true, "estado": "aprobado"}
 {"timestamp": "2026-11-26T02:04:47.350239+00:00", "session_id": "prueba_gate2_supervision", "evento": "supervision_humana", "aprobacion": true, "estado": "aprobado"}
+{"timestamp": "2026-11-27T18:04:38.714632+00:00", "session_id": "gate2_aprobacion", "evento": "supervision_humana", "herramienta": "calcular_indicadores_financieros", "decision": "aprobacion", "estado": "aprobado"}
+{"timestamp": "2026-11-27T18:04:48.760822+00:00", "session_id": "gate2_rechazo", "evento": "supervision_humana", "herramienta": "calcular_indicadores_financieros", "decision": "rechazo", "estado": "rechazado"}
